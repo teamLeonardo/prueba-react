@@ -1,8 +1,5 @@
 import { SUPA } from "../supabase/supabase.config"
 
-const headers = {
-    'Content-Type': 'application/json'
-}
 
 const get = async <T>(url: string) => {
     const response = await SUPA.from(url).select("*")

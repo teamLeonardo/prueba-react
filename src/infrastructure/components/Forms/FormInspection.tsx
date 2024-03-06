@@ -11,7 +11,8 @@ export const FormInspection = ({ typeForm }: any) => {
     const isEdit = !isAdd
     const navigate = useNavigate()
     const { state: myInfo } = useMyInfo()
-    const { data, error, loading } = useDataFetching<any[]>(askRepository.getAllAsk)
+    
+    const { data } = useDataFetching<any[]>(askRepository.getAllAsk)
     return (
         <div className="flex flex-col gap-7 mb-10">
             <div className="w-full sticky top-0 z-10 bg-base-100  py-5">

@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { InputsInspector } from "../../../dominio/models/inspector";
 import { inspectorRepository } from "../../repositories/inspector.repository";
 import { IFinspectorDto } from "../../http/dto/inspector.dto";
 
