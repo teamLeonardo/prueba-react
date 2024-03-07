@@ -4,10 +4,6 @@ import { http } from "../http/http"
 
 
 export const inspectorRepository = {
-    getMyInfo: async (id: string) => {
-        const info = await http.getBy<IFinspectorDto>('inspector', id)
-        return info
-    },
     registerMyInfo: async (body: InputsInspector) => {
         const info = await http.post<IFinspectorDto>('inspector', body)
         return info

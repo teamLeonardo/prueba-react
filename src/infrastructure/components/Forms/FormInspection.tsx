@@ -1,25 +1,57 @@
 import { FaCheckSquare } from "react-icons/fa";
 import { ButtonUi } from "../UI/ButtonUi";
 import { TextUI } from "../UI/TextUi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMyInfo } from "../context/ctxMyInfo";
-import useDataFetching from "../hooks/useDataFetching";
-import { askRepository } from "../../repositories/ask.repository";
+import { useInspection } from "../context/ctxInspection";
+import { useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { InputsInspection } from "../../../dominio/models/inspection";
+
 
 export const FormInspection = ({ typeForm }: any) => {
     const isAdd = typeForm === "edit" ? false : true;
-    const isEdit = !isAdd
-    const navigate = useNavigate()
+
+    const { id: idEdit } = useParams()
+
     const { state: myInfo } = useMyInfo()
-    
-    const { data } = useDataFetching<any[]>(askRepository.getAllAsk)
+
+    const { dispatch, state: inspection, getAsk, addInspection, getInspectioByID } = useInspection()
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<InputsInspection>()
+
+    const onSubmit: SubmitHandler<InputsInspection> = () => {
+        if (isAdd) {
+            addInspection()
+        }
+    }
+
+    useEffect(() => {
+        dispatch({
+            type: "CHANGE",
+            payload: {
+                inspector: myInfo.id
+            }
+        })
+        getAsk()
+
+    }, [])
+    useEffect(() => {
+        if (idEdit) {
+            getInspectioByID(parseInt(idEdit || ""))
+        }
+    }, [idEdit])
     return (
-        <div className="flex flex-col gap-7 mb-10">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7 mb-10">
             <div className="w-full sticky top-0 z-10 bg-base-100  py-5">
                 <div className="text-end">
-                    <ButtonUi onClick={() => { navigate("/") }} className="btn-success text-white">
+                    <ButtonUi type="submit" className="btn-success text-white">
                         <FaCheckSquare size={20} />
-                        Guardar
+                        {isAdd ? "Guardar" : 'Actualizar'}
                     </ButtonUi>
                 </div>
             </div>
@@ -29,7 +61,16 @@ export const FormInspection = ({ typeForm }: any) => {
                     Personal
                 </div>
                 <div className="collapse-content w-full">
-                    <select className="select select-bordered  select-lg w-full ">
+                    <select
+                        onChange={() => {
+                            dispatch({
+                                type: "CHANGE",
+                                payload: {
+                                    person: 1
+                                }
+                            })
+                        }}
+                        className="select select-bordered  select-lg w-full ">
                         <option disabled selected>Selecione al personal</option>
                         <option value={"1"}>Pepe juan 1</option>
                         <option value={"2"}>Pepe juan 2</option>
@@ -53,34 +94,69 @@ export const FormInspection = ({ typeForm }: any) => {
                 </div>
                 <div className="collapse-content">
                     <TextUI
-                        isError={false}
-                        mssError="Error al codificar"
                         labelTitle="Pais"
-                        inputProps={{ "placeholder": "Escribe datos ... " }}
+                        isError={!!errors.Pais}
+                        mssError="Este campo es requerido"
+                        inputProps={{ "placeholder": "Escribe tus datos... " }}
+                        register={register('Pais', {
+                            required: true,
+                            value: inspection.Pais,
+                            onChange: (event) => {
+                                dispatch({ type: "CHANGE", payload: { Pais: event.target.value } })
+                            }
+                        })}
                     />
                     <TextUI
-                        isError={false}
-                        mssError="Error al codificar"
+                        isError={!!errors.direccion}
+                        mssError="Este campo es requerido"
                         labelTitle="Dirección"
-                        inputProps={{ "placeholder": "Escribe datos ... " }}
+                        inputProps={{ "placeholder": "Escribe tus datos... " }}
+                        register={register('direccion', {
+                            required: true,
+                            value: inspection.direccion,
+                            onChange: (event) => {
+                                dispatch({ type: "CHANGE", payload: { direccion: event.target.value } })
+                            }
+                        })}
                     />
                     <TextUI
-                        isError={false}
-                        mssError="Error al codificar"
+                        isError={!!errors.cliente}
+                        mssError="Este campo es requerido"
                         labelTitle="Cliente"
-                        inputProps={{ "placeholder": "Escribe datos ... " }}
+                        inputProps={{ "placeholder": "Escribe tus datos... " }}
+                        register={register('cliente', {
+                            required: true,
+                            value: inspection.cliente,
+                            onChange: (event) => {
+                                dispatch({ type: "CHANGE", payload: { cliente: event.target.value } })
+                            }
+                        })}
                     />
                     <TextUI
-                        isError={false}
-                        mssError="Error al codificar"
+                        isError={!!errors.obra}
+                        mssError="Este campo es requerido"
                         labelTitle="Obra"
-                        inputProps={{ "placeholder": "Escribe datos ... " }}
+                        inputProps={{ "placeholder": "Escribe tus datos... " }}
+                        register={register('obra', {
+                            required: true,
+                            value: inspection.obra,
+                            onChange: (event) => {
+                                dispatch({ type: "CHANGE", payload: { obra: event.target.value } })
+                            }
+                        })}
                     />
                     <TextUI
-                        isError={false}
-                        mssError="Error al codificar"
+                        isError={!!errors.fecha}
+                        mssError="Este campo es requerido"
                         labelTitle="Fecha"
                         inputProps={{ "placeholder": "Escribe datos ...", type: "date" }}
+                        register={register('fecha', {
+                            required: true,
+                            value: inspection.fecha,
+                            onChange: (event) => {
+                                dispatch({ type: "CHANGE", payload: { fecha: event.target.value } })
+                            }
+                        })}
                     />
                 </div>
             </div>
@@ -91,23 +167,53 @@ export const FormInspection = ({ typeForm }: any) => {
                 </div>
                 <div className="collapse-content">
                     {
-                        data && data.map((value, idx) => {
-                            return <div className="border-b-2 pb-2 mb-2 border-gray-800">
-                                <div className="label" key={idx}>
+                        inspection && inspection.ask.map((value: any, idx: any) => {
+                            return <div key={idx} className="border-b-2 pb-2 mb-2 border-gray-800">
+                                <div className="label" >
                                     <span className="label-text">{value.ask}</span>
                                     <span className=" text-red-600">*</span>
                                 </div>
-                                <div className="flex justify-center gap-10">
+                                <div
+                                    className="flex justify-center gap-10"
+                                >
                                     <div className="form-control">
                                         <label className="label cursor-pointer">
                                             <span className="label-text mr-3">SI</span>
-                                            <input type="radio" name={`radio-${idx}`} className="radio checked:bg-red-500"/>
+                                            <input
+                                                type="radio"
+                                                name={`radio-${idx}`}
+                                                className="radio checked:bg-red-500"
+                                                value={"true"}
+                                                onChange={(event) => {
+                                                    dispatch({
+                                                        type: "changeAnswer",
+                                                        payload: {
+                                                            index: value.index,
+                                                            ["answer" + value.orden]: true
+                                                        }
+                                                    })
+                                                }}
+                                            />
                                         </label>
                                     </div>
                                     <div className="form-control">
                                         <label className="label cursor-pointer">
                                             <span className="label-text  mr-3">no</span>
-                                            <input type="radio" name={`radio-${idx}`} className="radio checked:bg-blue-500" />
+                                            <input
+                                                type="radio"
+                                                name={`radio-${idx}`}
+                                                className="radio checked:bg-blue-500"
+                                                value={"false"}
+                                                onChange={(event) => {
+                                                    dispatch({
+                                                        type: "changeAnswer",
+                                                        payload: {
+                                                            index: value.index,
+                                                            ["answer" + value.orden]: false
+                                                        }
+                                                    })
+                                                }}
+                                            />
                                         </label>
                                     </div>
                                 </div>
@@ -117,7 +223,7 @@ export const FormInspection = ({ typeForm }: any) => {
 
                 </div>
             </div>
-        </div>
+        </form>
     )
 }
 

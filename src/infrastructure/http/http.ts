@@ -6,7 +6,7 @@ const get = async <T>(url: string) => {
     return response.data as T[]
 }
 
-const getBy = async <T>(url: string, id: string) => {
+const getBy = async <T>(url: string, id: number) => {
     const response = await SUPA.from(url).select("*")
         .eq('id', id)
         .single();

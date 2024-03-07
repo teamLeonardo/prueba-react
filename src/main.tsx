@@ -14,6 +14,7 @@ import { EditInspection } from './infrastructure/components/page/inspection/Edit
 import { ListPerson } from './infrastructure/components/page/person/ListPerson';
 import { InfoInspector } from './infrastructure/components/page/inspector/InfoInspector';
 import { ProviderMyInfo } from './infrastructure/components/context/ctxMyInfo';
+import { ProviderInspection } from './infrastructure/components/context/ctxInspection';
 
 
 const router = createBrowserRouter([
@@ -85,7 +86,9 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ProviderMyInfo>
-    <RouterProvider router={router} />
+    <ProviderInspection>
+      <RouterProvider router={router} />
+    </ProviderInspection>
   </ProviderMyInfo>
 )
 

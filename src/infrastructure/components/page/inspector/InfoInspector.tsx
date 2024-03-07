@@ -22,8 +22,8 @@ export const InfoInspector = () => {
         } else {
             editDatos()
         }
-
     }
+    
     return (
         <AppLayout title={"Mi informacion de inspector"}>
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-2">
